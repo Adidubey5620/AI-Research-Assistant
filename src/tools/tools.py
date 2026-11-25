@@ -1,4 +1,4 @@
-from langchain.tools import tool
+from langchain.tools import tool 
 import requests
 from dotenv import load_dotenv
 import os
@@ -7,13 +7,12 @@ from rich import print
 from bs4 import BeautifulSoup
 from readability import Document
 import trafilatura
-import re
+import re 
 
 
 load_dotenv()
 
 tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
-
 
 @tool
 def web_search(query : str) -> str:
@@ -29,9 +28,16 @@ def web_search(query : str) -> str:
     
     return "\n----\n".join(out)
 
+   
+    
+
 @tool
 def scrape_url(url: str) -> str:
-    """Scrape and extract the main text content from a given URL."""
+    """
+    Scrape and extract clean readable content from a URL.
+    Uses multiple extraction strategies for better reliability.
+    """
+
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -43,6 +49,7 @@ def scrape_url(url: str) -> str:
     }
 
     try:
+        # Fetch page 
         response = requests.get(
             url,
             headers=headers,
@@ -60,6 +67,10 @@ def scrape_url(url: str) -> str:
             include_comments=False,
             include_tables=False
         )
+
+        if extracted and len(extracted.strip()) > 200:
+            cleaned = re.sub(r'\s+', ' ', extracted)
+            return cleaned[:5000]
 
         # Strategy 2 → readability
 
