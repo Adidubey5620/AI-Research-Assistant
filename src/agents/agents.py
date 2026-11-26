@@ -80,8 +80,3 @@ One line verdict:
 
 critic_chain = critic_prompt | llm | StrOutputParser()
 
-
-if __name__ == "__main__":
-    agent = build_search_agent()
-    result = agent.invoke({"input": "latest AI news"})
-    print(result)
